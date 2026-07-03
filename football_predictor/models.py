@@ -93,11 +93,12 @@ def train_outcome_model(
         from sklearn.ensemble import RandomForestClassifier
 
         estimator = RandomForestClassifier(
-            n_estimators=240,
-            max_depth=5,
+            n_estimators=120,
+            max_depth=6,
             min_samples_leaf=3,
             class_weight="balanced_subsample",
             random_state=random_state,
+            n_jobs=-1,
         )
         model_name = "random_forest"
 

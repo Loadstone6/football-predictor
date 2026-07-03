@@ -56,6 +56,54 @@ def _competition_breakdown(scored: pd.DataFrame) -> list[dict]:
     return sorted(rows, key=lambda item: item["matches"], reverse=True)
 
 
+def _data_quality(featured: pd.DataFrame, scored: pd.DataFrame) -> dict:
+    if featured.empty:
+        return {
+            "matches": 0,
+            "scored_matches": 0,
+            "teams": 0,
+            "competitions": 0,
+            "date_start": None,
+            "date_end": None,
+            "odds_coverage": 0.0,
+            "xg_coverage": 0.0,
+            "duplicate_matches": 0,
+            "warnings": ["No match rows available."],
+        }
+
+    odds_columns = ["home_odds", "draw_odds", "away_odds"]
+    has_odds = featured[odds_columns].notna().all(axis=1) if all(col in featured for col in odds_columns) else False
+    has_xg = featured[["home_xg", "away_xg"]].notna().all(axis=1) if {"home_xg", "away_xg"}.issubset(featured.columns) else False
+    duplicates = int(featured.duplicated(subset=["date", "competition", "home_team", "away_team"]).sum())
+    teams = int(featured[["home_team", "away_team"]].stack().nunique())
+    competitions = int(featured["competition"].nunique())
+
+    odds_coverage = float(has_odds.mean()) if hasattr(has_odds, "mean") else 0.0
+    xg_coverage = float(has_xg.mean()) if hasattr(has_xg, "mean") else 0.0
+    warnings = []
+    if odds_coverage < 0.85:
+        warnings.append("Odds coverage is below 85%; betting simulation may be sparse.")
+    if xg_coverage < 0.25:
+        warnings.append("xG coverage is low; the goal model falls back to observed goals.")
+    if duplicates:
+        warnings.append(f"{duplicates} duplicate match rows were detected.")
+    if len(scored) < 250:
+        warnings.append("Backtest sample is small for betting conclusions.")
+
+    return {
+        "matches": int(len(featured)),
+        "scored_matches": int(len(scored)),
+        "teams": teams,
+        "competitions": competitions,
+        "date_start": featured["date"].min(),
+        "date_end": featured["date"].max(),
+        "odds_coverage": odds_coverage,
+        "xg_coverage": xg_coverage,
+        "duplicate_matches": duplicates,
+        "warnings": warnings,
+    }
+
+
 def build_report(backtest: dict, source_name: str) -> dict:
     predictions = backtest["predictions"]
     scored = backtest["scored_predictions"]
@@ -85,6 +133,7 @@ def build_report(backtest: dict, source_name: str) -> dict:
         "calibration": _clean(backtest["calibration"]),
         "model_comparison": _clean(backtest["model_comparison"]),
         "competition_breakdown": _clean(_competition_breakdown(scored)),
+        "data_quality": _clean(_data_quality(backtest["featured"], scored)),
         "team_profiles": _clean(build_team_profiles(backtest["featured"])),
         "feature_importance": _clean(feature_importance),
         "local_factors": _clean(backtest["local_factors"]),

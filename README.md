@@ -14,11 +14,18 @@ This first implementation turns the project prompt in [PROMPT.md](PROMPT.md) int
 ## Quick Start
 
 ```powershell
-python -m football_predictor.cli demo --output web/data/report.json
+python scripts\build_football_data_dataset.py --output data\football_data_matches.csv
+python -m football_predictor.cli backtest --matches data\football_data_matches.csv --output web\data\report.json --min-train 500 --refit-frequency 200 --edge-threshold 0.05 --fractional-kelly 0.20 --max-stake-fraction 0.02
 python -m http.server 8000 --directory web
 ```
 
 Open `http://localhost:8000`.
+
+For a tiny smoke-test report, run:
+
+```powershell
+python -m football_predictor.cli demo --output web\data\report.json
+```
 
 ## Public Deployment
 
@@ -57,7 +64,7 @@ For a true out-of-sample World Cup test, append each match only after it has fin
 - [Club Elo](https://clubelo.com/) provides club Elo ratings and historical strength estimates.
 - [World Football Elo Ratings](https://eloratings.net/) publishes national-team Elo ratings.
 
-The bundled `data/sample_matches.csv` is a small illustrative seed dataset for smoke testing the pipeline. It is not enough to make research-grade betting claims.
+The bundled `data/sample_matches.csv` is a small illustrative seed dataset for smoke testing the pipeline. The richer `data/football_data_matches.csv` dataset is built from Football-Data.co.uk match and odds CSVs.
 
 ## Betting Note
 

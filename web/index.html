@@ -14,9 +14,16 @@
           <p class="eyebrow">Walk-forward model</p>
           <h1>Football Predictor</h1>
         </div>
-        <div class="status">
-          <span id="modelName">Loading</span>
-          <span id="sourceName">No report</span>
+        <div class="top-actions">
+          <div class="status">
+            <span id="modelName">Loading</span>
+            <span id="sourceName">No report</span>
+          </div>
+          <div class="button-row">
+            <button id="copyLinkButton" type="button">Copy Link</button>
+            <button id="downloadReportButton" type="button">Download Report</button>
+            <button id="exportBetsButton" type="button">Export Bets</button>
+          </div>
         </div>
       </header>
 
@@ -77,6 +84,11 @@
         <article class="panel lab-panel">
           <div class="panel-head">
             <h2>Match Lab</h2>
+            <div class="button-row compact-buttons">
+              <button id="swapTeamsButton" type="button">Swap</button>
+              <button id="randomFixtureButton" type="button">Random</button>
+              <button id="resetOddsButton" type="button">Reset Odds</button>
+            </div>
           </div>
           <div class="lab-controls">
             <label>
@@ -172,6 +184,13 @@
             <h2>Competitions</h2>
           </div>
           <div id="competitionTable" class="data-table"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Data Quality</h2>
+          </div>
+          <div id="qualityPanel" class="quality-panel"></div>
         </article>
 
         <article class="panel wide">

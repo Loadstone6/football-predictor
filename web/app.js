@@ -14,6 +14,71 @@ const fmtSignedPct = (value) => `${Number(value || 0) >= 0 ? "+" : ""}${fmtPct(v
 const fmtNum = (value, digits = 2) => Number(value || 0).toFixed(digits);
 const fmtMoney = (value) => `${Number(value || 0) >= 0 ? "" : "-"}£${Math.abs(Number(value || 0)).toFixed(2)}`;
 
+function downloadText(filename, text, type = "text/plain") {
+  const blob = new Blob([text], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function csvEscape(value) {
+  const text = String(value ?? "");
+  if (text.includes(",") || text.includes("\"") || text.includes("\n")) {
+    return `"${text.replaceAll("\"", "\"\"")}"`;
+  }
+  return text;
+}
+
+function toCsv(rows, columns) {
+  const header = columns.map((column) => csvEscape(column.label)).join(",");
+  const body = rows.map((row) => columns.map((column) => csvEscape(column.value(row))).join(",")).join("\n");
+  return `${header}\n${body}\n`;
+}
+
+function setupActionButtons() {
+  el("copyLinkButton").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+    } catch (error) {
+      const textarea = document.createElement("textarea");
+      textarea.value = window.location.href;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.left = "-999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
+    el("copyLinkButton").textContent = "Copied";
+    setTimeout(() => { el("copyLinkButton").textContent = "Copy Link"; }, 1200);
+  });
+
+  el("downloadReportButton").addEventListener("click", () => {
+    downloadText("football-predictor-report.json", JSON.stringify(report, null, 2), "application/json");
+  });
+
+  el("exportBetsButton").addEventListener("click", () => {
+    const rows = (report.betting_ledger || []).filter((row) => row.placed);
+    const csv = toCsv(rows, [
+      { label: "date", value: (row) => row.date },
+      { label: "match", value: (row) => row.match },
+      { label: "outcome", value: (row) => row.outcome },
+      { label: "edge", value: (row) => row.edge },
+      { label: "odds", value: (row) => row.odds },
+      { label: "stake", value: (row) => row.stake },
+      { label: "profit", value: (row) => row.profit },
+      { label: "bankroll_after", value: (row) => row.bankroll_after },
+    ]);
+    downloadText("football-predictor-bets.csv", csv, "text/csv");
+  });
+}
+
 function renderMetricCards(summary) {
   const betting = summary.betting || {};
   const metrics = [
@@ -254,6 +319,27 @@ function populateLabTeams() {
     el(id).addEventListener("input", renderLab);
     el(id).addEventListener("change", renderLab);
   });
+  el("swapTeamsButton").addEventListener("click", () => {
+    const home = el("labHomeTeam").value;
+    el("labHomeTeam").value = el("labAwayTeam").value;
+    el("labAwayTeam").value = home;
+    renderLab();
+  });
+  el("randomFixtureButton").addEventListener("click", () => {
+    if (teams.length < 2) return;
+    const first = Math.floor(Math.random() * teams.length);
+    let second = Math.floor(Math.random() * teams.length);
+    while (second === first) second = Math.floor(Math.random() * teams.length);
+    el("labHomeTeam").value = teams[first].team;
+    el("labAwayTeam").value = teams[second].team;
+    renderLab();
+  });
+  el("resetOddsButton").addEventListener("click", () => {
+    el("labHomeOdds").value = "2.40";
+    el("labDrawOdds").value = "3.30";
+    el("labAwayOdds").value = "2.90";
+    renderLab();
+  });
 }
 
 function renderTeamCompare(home, away) {
@@ -414,6 +500,33 @@ function renderCompetitionTable() {
   );
 }
 
+function renderQualityPanel() {
+  const quality = report.data_quality || {};
+  const warnings = quality.warnings || [];
+  const items = [
+    ["Matches", quality.matches, 0],
+    ["Scored", quality.scored_matches, 0],
+    ["Teams", quality.teams, 0],
+    ["Competitions", quality.competitions, 0],
+    ["Odds", quality.odds_coverage, 1, true],
+    ["xG", quality.xg_coverage, 1, true],
+  ];
+  el("qualityPanel").innerHTML = `
+    <div class="quality-grid">
+      ${items.map(([label, value, digits, percent]) => `
+        <div class="quality-item">
+          <span>${label}</span>
+          <strong>${percent ? fmtPct(value) : Number(value || 0).toFixed(digits)}</strong>
+        </div>
+      `).join("")}
+    </div>
+    <div class="muted">${quality.date_start || "-"} to ${quality.date_end || "-"}</div>
+    <div class="warning-list">
+      ${(warnings.length ? warnings : ["Data checks passed for the current report."]).map((warning) => `<div>${warning}</div>`).join("")}
+    </div>
+  `;
+}
+
 function formStrip(form) {
   return `<span class="form-strip">${String(form || "").split("").map((value) => `<span class="${value}">${value}</span>`).join("")}</span>`;
 }
@@ -475,8 +588,10 @@ async function init() {
   renderCalibration();
   renderModelComparison();
   renderCompetitionTable();
+  renderQualityPanel();
   renderTeamTable();
   renderBettingLedger();
+  setupActionButtons();
   el("notes").innerHTML = (report.notes || []).map((note) => `<li>${note}</li>`).join("");
 }
 

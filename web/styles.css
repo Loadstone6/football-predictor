@@ -80,6 +80,45 @@ h2 {
   gap: 8px;
 }
 
+.top-actions {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.compact-buttons {
+  justify-content: flex-start;
+}
+
+button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdfc;
+  color: var(--ink);
+  padding: 8px 11px;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: #b8c8c1;
+  background: #f0f6f3;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
 .status span {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -519,6 +558,51 @@ input[type="checkbox"] {
   background: var(--red);
 }
 
+.quality-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.quality-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.quality-item {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fbfdfc;
+}
+
+.quality-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.quality-item strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 1.1rem;
+}
+
+.warning-list {
+  display: grid;
+  gap: 8px;
+}
+
+.warning-list div {
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: #745114;
+  background: #f7edd6;
+  font-size: 0.9rem;
+}
+
 svg {
   width: 100%;
   min-height: 230px;
@@ -590,6 +674,14 @@ svg {
   }
 
   .status {
+    justify-content: flex-start;
+  }
+
+  .top-actions {
+    justify-items: start;
+  }
+
+  .button-row {
     justify-content: flex-start;
   }
 
