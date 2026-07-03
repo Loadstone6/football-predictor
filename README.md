@@ -1,15 +1,18 @@
 # Football Predictor
 
-Walk-forward football score and betting-value predictor.
+Professional football prediction and backtesting console.
 
-This first implementation turns the project prompt in [PROMPT.md](PROMPT.md) into a runnable scaffold:
+This implementation turns the product prompt in [PROMPT.md](PROMPT.md) into a hosted static analytics app backed by a local Python modelling pipeline:
 
 - chronological feature generation with pre-match Elo, recent form, rest, market probabilities, and xG fallbacks
 - strict walk-forward backtesting with no future rows used for model training
-- model selection that tries XGBoost when installed and otherwise uses scikit-learn
-- Poisson exact-score distributions and a lightweight match simulator module
-- value-betting bankroll simulation using no-vig implied probabilities and fractional Kelly sizing
-- static dashboard generated from a JSON backtest artifact
+- model comparison across market baseline, Elo, Poisson, tree models, and XGBoost when installed
+- Dixon-Coles adjusted scoreline matrices, expected goals, over/under, BTTS, and clean-sheet markets
+- fixture browser with filters, confidence sorting, model-vs-market edge sorting, and search
+- match detail page with probability bars, fair odds, score heatmap, xG, explainability, risk factors, and similar-match history
+- team and league analytics pages with power rankings, form, standings, trend charts, and league performance
+- backtest dashboard with accuracy, log loss, Brier score, calibration, confidence buckets, confusion matrix, bankroll simulation, and archive rows
+- model lab with scenario simulator, odds lab, model registry, leakage audit, data quality checks, and watchlists
 
 ## Quick Start
 
@@ -34,6 +37,8 @@ The public dashboard is published at:
 <https://loadstone6.github.io/>
 
 The source project is in `Loadstone6/football-predictor`. The live static site is served from the root GitHub Pages repository `Loadstone6/Loadstone6.github.io`, using the generated contents of the local `web/` directory.
+
+To publish a fresh build, regenerate `web/data/report.json`, copy the contents of `web/` into the Pages repository root, then commit and push that repository.
 
 ## Use Your Own Data
 
@@ -70,10 +75,13 @@ The bundled `data/sample_matches.csv` is a small illustrative seed dataset for s
 
 The betting module implements value betting, not true arbitrage. It compares model probability with bookmaker implied probability after removing margin, then sizes the best positive-edge bet with fractional Kelly. Profit in a backtest is not evidence of real-world profitability unless the historical odds are timestamped, available at bet time, and adjusted for limits, commission, rejection, slippage, and overfitting.
 
+The current public dataset has strong results and odds coverage but no verified injuries, lineups, referees, weather, or real xG feed. Those are represented as data-quality warnings and adapter targets rather than silently inferred facts.
+
 ## Tests
 
 ```powershell
 python -m pytest
+node --check web\app.js
 ```
 
 ## Model Comparison

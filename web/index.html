@@ -4,217 +4,457 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Football Predictor</title>
+    <meta
+      name="description"
+      content="Walk-forward football prediction dashboard with probabilities, expected goals, market comparison, calibration, and backtesting."
+    />
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Walk-forward model</p>
-          <h1>Football Predictor</h1>
+    <div id="app" class="app-shell">
+      <aside class="sidebar" aria-label="Primary">
+        <a class="brand" href="#dashboard" aria-label="Football Predictor dashboard">
+          <span class="brand-mark">FP</span>
+          <span>
+            <strong>Football Predictor</strong>
+            <small>Walk-forward analytics</small>
+          </span>
+        </a>
+
+        <nav class="nav-list">
+          <a href="#dashboard" data-nav="dashboard">Dashboard</a>
+          <a href="#fixtures" data-nav="fixtures">Fixtures</a>
+          <a href="#match" data-nav="match">Match</a>
+          <a href="#teams" data-nav="teams">Teams</a>
+          <a href="#leagues" data-nav="leagues">Leagues</a>
+          <a href="#backtest" data-nav="backtest">Backtest</a>
+          <a href="#lab" data-nav="lab">Model Lab</a>
+        </nav>
+
+        <div class="sidebar-card">
+          <span class="label">Model</span>
+          <strong id="sideModelName">Loading</strong>
+          <small id="sideSourceName">Report pending</small>
         </div>
-        <div class="top-actions">
-          <div class="status">
-            <span id="modelName">Loading</span>
-            <span id="sourceName">No report</span>
+
+        <div class="sidebar-card compact">
+          <span class="label">Responsible Use</span>
+          <small>Analytics only. No prediction is guaranteed.</small>
+        </div>
+      </aside>
+
+      <main class="main-shell">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Probabilities, not certainties</p>
+            <h1>Football Prediction Console</h1>
           </div>
-          <div class="button-row">
+          <div class="top-actions">
+            <button id="searchButton" class="icon-button" type="button" aria-label="Search">Search</button>
+            <button id="themeButton" class="icon-button" type="button" aria-label="Toggle theme">Theme</button>
             <button id="copyLinkButton" type="button">Copy Link</button>
-            <button id="downloadReportButton" type="button">Download Report</button>
-            <button id="exportBetsButton" type="button">Export Bets</button>
+            <button id="downloadReportButton" type="button">Report JSON</button>
+            <button id="exportPredictionsButton" type="button">Predictions CSV</button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <section class="scoreboard">
-        <div class="match-block">
-          <label for="matchSelect">Match</label>
-          <select id="matchSelect"></select>
-          <div class="teams">
+        <section id="dashboard" class="page-section">
+          <div class="section-head">
             <div>
-              <span class="team-label">Home</span>
-              <strong id="homeTeam">-</strong>
+              <p class="eyebrow">Overview</p>
+              <h2>Dashboard</h2>
             </div>
-            <div class="scoreline" id="actualScore">-</div>
+            <div class="chip-row" id="dashboardChips"></div>
+          </div>
+          <div class="metric-grid" id="summaryCards"></div>
+          <div class="dashboard-layout">
+            <article class="panel span-8">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Upcoming</p>
+                  <h3>Featured Fixtures</h3>
+                </div>
+                <select id="dashboardLeagueFilter" aria-label="Dashboard league filter"></select>
+              </div>
+              <div id="featuredFixtures" class="fixture-grid"></div>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Model vs Market</p>
+                  <h3>Largest Disagreements</h3>
+                </div>
+              </div>
+              <div id="marketDisagreements" class="stack-list"></div>
+            </article>
+            <article class="panel span-5">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Calibration</p>
+                  <h3>Reliability</h3>
+                </div>
+              </div>
+              <svg id="dashboardCalibration" class="chart" viewBox="0 0 720 280" role="img"></svg>
+            </article>
+            <article class="panel span-7">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Rolling 300 matches</p>
+                  <h3>Backtest Trend</h3>
+                </div>
+              </div>
+              <svg id="accuracyTrend" class="chart" viewBox="0 0 840 280" role="img"></svg>
+            </article>
+          </div>
+        </section>
+
+        <section id="fixtures" class="page-section">
+          <div class="section-head">
             <div>
-              <span class="team-label">Away</span>
-              <strong id="awayTeam">-</strong>
+              <p class="eyebrow">Browser</p>
+              <h2>Fixtures</h2>
+            </div>
+            <div class="toolbar">
+              <input id="fixtureSearch" type="search" placeholder="Search teams or leagues" aria-label="Search fixtures" />
+              <select id="fixtureLeagueFilter" aria-label="Fixture league filter"></select>
+              <select id="fixtureSort" aria-label="Sort fixtures">
+                <option value="date">Kickoff</option>
+                <option value="confidence">Confidence</option>
+                <option value="edge">Model edge</option>
+                <option value="xg">Expected goals</option>
+                <option value="upset">Upset probability</option>
+              </select>
             </div>
           </div>
-        </div>
-        <div class="pitch">
-          <div class="pitch-line mid"></div>
-          <div class="pitch-box left"></div>
-          <div class="pitch-box right"></div>
-          <div class="pitch-dot"></div>
-          <div class="pitch-readout">
-            <span id="topScore">-</span>
-            <small>most likely score</small>
+          <div class="filter-strip">
+            <label>Min confidence <input id="confidenceFilter" type="range" min="0" max="100" value="0" /></label>
+            <label>Min edge <input id="edgeFilter" type="range" min="0" max="25" value="0" /></label>
+            <label class="check-label"><input id="oddsOnlyFilter" type="checkbox" /> Odds available</label>
           </div>
-        </div>
-      </section>
+          <div id="fixturesGrid" class="fixture-grid large"></div>
+        </section>
 
-      <section class="grid primary-grid">
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Outcome</h2>
-          </div>
-          <div id="probBars" class="prob-bars"></div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Score Map</h2>
-          </div>
-          <div id="heatmap" class="heatmap"></div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Value</h2>
-          </div>
-          <div id="valueTable" class="value-table"></div>
-        </article>
-      </section>
-
-      <section class="grid metrics-grid" id="metricCards"></section>
-
-      <section class="grid lab-grid">
-        <article class="panel lab-panel">
-          <div class="panel-head">
-            <h2>Match Lab</h2>
-            <div class="button-row compact-buttons">
-              <button id="swapTeamsButton" type="button">Swap</button>
-              <button id="randomFixtureButton" type="button">Random</button>
-              <button id="resetOddsButton" type="button">Reset Odds</button>
+        <section id="match" class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Prediction Detail</p>
+              <h2 id="matchTitle">Match</h2>
+            </div>
+            <div class="toolbar">
+              <select id="matchSelect" aria-label="Select match"></select>
+              <button id="saveMatchButton" type="button">Save Match</button>
             </div>
           </div>
-          <div class="lab-controls">
-            <label>
-              Home
-              <select id="labHomeTeam"></select>
-            </label>
-            <label>
-              Away
-              <select id="labAwayTeam"></select>
-            </label>
-            <label class="check-row">
-              <input id="labNeutral" type="checkbox" />
-              Neutral
-            </label>
+          <div id="matchHeader" class="match-hero"></div>
+          <div class="match-layout">
+            <article class="panel span-5">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">1X2</p>
+                  <h3>Outcome Probabilities</h3>
+                </div>
+              </div>
+              <div id="matchProbabilityBars" class="prob-bars"></div>
+              <div id="marketComparison" class="value-table"></div>
+            </article>
+            <article class="panel span-3">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Goals</p>
+                  <h3>Markets</h3>
+                </div>
+              </div>
+              <div id="goalMarkets" class="stat-stack"></div>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Scoreline</p>
+                  <h3>Heatmap</h3>
+                </div>
+              </div>
+              <div id="scoreHeatmap" class="heatmap"></div>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Explainability</p>
+                  <h3>Key Drivers</h3>
+                </div>
+              </div>
+              <div id="featureDrivers" class="rank-list"></div>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Comparison</p>
+                  <h3>Team Radar</h3>
+                </div>
+              </div>
+              <svg id="teamRadar" class="chart radar-chart" viewBox="0 0 420 340" role="img"></svg>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">History</p>
+                  <h3>Similar Matches</h3>
+                </div>
+              </div>
+              <div id="similarMatches" class="stack-list"></div>
+            </article>
           </div>
-          <div id="labProbBars" class="prob-bars compact"></div>
-          <div id="labHeatmap" class="heatmap small"></div>
-        </article>
+        </section>
 
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Team Edge</h2>
+        <section id="teams" class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Power Rankings</p>
+              <h2>Teams</h2>
+            </div>
+            <div class="toolbar">
+              <input id="teamSearch" type="search" placeholder="Search team" aria-label="Search teams" />
+              <select id="teamSelect" aria-label="Select team"></select>
+              <button id="saveTeamButton" type="button">Save Team</button>
+            </div>
           </div>
-          <div id="teamCompare" class="compare-list"></div>
-        </article>
+          <div class="team-layout">
+            <article class="panel span-4">
+              <div id="teamProfile" class="profile-card"></div>
+            </article>
+            <article class="panel span-8">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Recent Form</p>
+                  <h3>Trend</h3>
+                </div>
+              </div>
+              <svg id="teamTrendChart" class="chart" viewBox="0 0 900 300" role="img"></svg>
+            </article>
+            <article class="panel span-12">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Ranked</p>
+                  <h3>Team Table</h3>
+                </div>
+              </div>
+              <div id="teamTable" class="data-table"></div>
+            </article>
+          </div>
+        </section>
 
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Odds Lab</h2>
+        <section id="leagues" class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Competition Analytics</p>
+              <h2>Leagues</h2>
+            </div>
+            <select id="leagueSelect" aria-label="Select league"></select>
           </div>
-          <div class="odds-grid">
-            <label>
-              Home odds
-              <input id="labHomeOdds" type="number" min="1.01" step="0.01" value="2.40" />
-            </label>
-            <label>
-              Draw odds
-              <input id="labDrawOdds" type="number" min="1.01" step="0.01" value="3.30" />
-            </label>
-            <label>
-              Away odds
-              <input id="labAwayOdds" type="number" min="1.01" step="0.01" value="2.90" />
-            </label>
-            <label>
-              Bankroll
-              <input id="labBankroll" type="number" min="1" step="10" value="1000" />
-            </label>
+          <div class="league-layout">
+            <article class="panel span-4">
+              <div id="leagueSummary" class="profile-card"></div>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Attack/Defence</p>
+                  <h3>Quadrant</h3>
+                </div>
+              </div>
+              <svg id="leagueQuadrant" class="chart" viewBox="0 0 460 340" role="img"></svg>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Model</p>
+                  <h3>League Performance</h3>
+                </div>
+              </div>
+              <div id="leaguePerf" class="stat-stack"></div>
+            </article>
+            <article class="panel span-12">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Table</p>
+                  <h3>Standings</h3>
+                </div>
+              </div>
+              <div id="leagueTable" class="data-table"></div>
+            </article>
           </div>
-          <div id="labValueTable" class="value-table"></div>
-        </article>
-      </section>
+        </section>
 
-      <section class="grid secondary-grid">
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Feature Weight</h2>
+        <section id="backtest" class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Historical Simulation</p>
+              <h2>Backtest</h2>
+            </div>
+            <div class="toolbar">
+              <select id="backtestLeagueFilter" aria-label="Backtest league filter"></select>
+              <button id="exportBacktestButton" type="button">Backtest CSV</button>
+            </div>
           </div>
-          <div id="importanceList" class="rank-list"></div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Match Factors</h2>
+          <div class="metric-grid" id="backtestCards"></div>
+          <div class="backtest-layout">
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Buckets</p>
+                  <h3>Confidence Accuracy</h3>
+                </div>
+              </div>
+              <div id="confidenceBuckets" class="rank-list"></div>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">1X2</p>
+                  <h3>Confusion Matrix</h3>
+                </div>
+              </div>
+              <div id="confusionMatrix" class="confusion-grid"></div>
+            </article>
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Market</p>
+                  <h3>Bankroll Simulation</h3>
+                </div>
+              </div>
+              <svg id="bankrollChart" class="chart" viewBox="0 0 520 300" role="img"></svg>
+            </article>
+            <article class="panel span-6">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Probability</p>
+                  <h3>Calibration Curve</h3>
+                </div>
+              </div>
+              <svg id="calibrationChart" class="chart" viewBox="0 0 720 300" role="img"></svg>
+            </article>
+            <article class="panel span-6">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Archive</p>
+                  <h3>Prediction Log</h3>
+                </div>
+              </div>
+              <div id="predictionArchive" class="data-table"></div>
+            </article>
           </div>
-          <div id="factorList" class="rank-list"></div>
-        </article>
+        </section>
 
-        <article class="panel wide">
-          <div class="panel-head">
-            <h2>Bankroll</h2>
+        <section id="lab" class="page-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Operations</p>
+              <h2>Model Lab</h2>
+            </div>
+            <div class="toolbar">
+              <button id="runBacktestButton" type="button">Run Backtest</button>
+              <button id="retrainButton" type="button">Retrain Model</button>
+              <button id="clearWatchlistButton" type="button">Clear Watchlist</button>
+            </div>
           </div>
-          <svg id="bankrollChart" viewBox="0 0 720 260" role="img"></svg>
-        </article>
+          <div class="lab-layout">
+            <article class="panel span-5">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Scenario</p>
+                  <h3>Prediction Lab</h3>
+                </div>
+                <div class="button-row">
+                  <button id="swapTeamsButton" type="button">Swap</button>
+                  <button id="randomFixtureButton" type="button">Random</button>
+                </div>
+              </div>
+              <div class="lab-controls">
+                <label>Home <select id="labHomeTeam"></select></label>
+                <label>Away <select id="labAwayTeam"></select></label>
+                <label class="check-label"><input id="labNeutral" type="checkbox" /> Neutral venue</label>
+              </div>
+              <div id="labProbabilityBars" class="prob-bars"></div>
+              <div class="odds-grid">
+                <label>Home odds <input id="labHomeOdds" type="number" min="1.01" step="0.01" value="2.40" /></label>
+                <label>Draw odds <input id="labDrawOdds" type="number" min="1.01" step="0.01" value="3.30" /></label>
+                <label>Away odds <input id="labAwayOdds" type="number" min="1.01" step="0.01" value="2.90" /></label>
+                <label>Bankroll <input id="labBankroll" type="number" min="1" step="10" value="1000" /></label>
+              </div>
+              <div id="labValueTable" class="value-table"></div>
+            </article>
 
-        <article class="panel wide">
-          <div class="panel-head">
-            <h2>Calibration</h2>
+            <article class="panel span-3">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Registry</p>
+                  <h3>Models</h3>
+                </div>
+              </div>
+              <div id="modelRegistry" class="stack-list"></div>
+            </article>
+
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Audit</p>
+                  <h3>Leakage Controls</h3>
+                </div>
+              </div>
+              <div id="leakageAudit" class="stack-list"></div>
+            </article>
+
+            <article class="panel span-5">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Benchmarks</p>
+                  <h3>Model Comparison</h3>
+                </div>
+              </div>
+              <div id="modelComparison" class="data-table"></div>
+            </article>
+
+            <article class="panel span-3">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Watchlist</p>
+                  <h3>Saved Items</h3>
+                </div>
+              </div>
+              <div id="watchlistPanel" class="stack-list"></div>
+            </article>
+
+            <article class="panel span-4">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Data</p>
+                  <h3>Quality Status</h3>
+                </div>
+              </div>
+              <div id="dataQualityPanel" class="quality-panel"></div>
+            </article>
           </div>
-          <svg id="calibrationChart" viewBox="0 0 720 260" role="img"></svg>
-        </article>
-      </section>
+        </section>
+      </main>
+    </div>
 
-      <section class="grid table-grid">
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Model Comparison</h2>
-          </div>
-          <div id="modelComparison" class="data-table"></div>
-        </article>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Competitions</h2>
-          </div>
-          <div id="competitionTable" class="data-table"></div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-head">
-            <h2>Data Quality</h2>
-          </div>
-          <div id="qualityPanel" class="quality-panel"></div>
-        </article>
-
-        <article class="panel wide">
-          <div class="panel-head">
-            <h2>Team Rankings</h2>
-          </div>
-          <div id="teamTable" class="data-table scroll-table"></div>
-        </article>
-
-        <article class="panel wide">
-          <div class="panel-head">
-            <h2>Betting Ledger</h2>
-          </div>
-          <div id="bettingLedger" class="data-table scroll-table"></div>
-        </article>
-      </section>
-
-      <section class="panel notes-panel">
-        <div class="panel-head">
-          <h2>Data Status</h2>
+    <div id="commandPalette" class="command-palette" aria-hidden="true">
+      <div class="command-dialog" role="dialog" aria-modal="true" aria-labelledby="commandTitle">
+        <div class="command-head">
+          <h2 id="commandTitle">Search</h2>
+          <button id="closeSearchButton" type="button" aria-label="Close search">Close</button>
         </div>
-        <ul id="notes"></ul>
-      </section>
-    </main>
+        <input id="commandInput" type="search" placeholder="Teams, leagues, fixtures" aria-label="Search all data" />
+        <div id="commandResults" class="command-results"></div>
+      </div>
+    </div>
+
+    <noscript>
+      <div class="noscript">This app needs JavaScript to render the prediction dashboard.</div>
+    </noscript>
     <script src="app.js"></script>
   </body>
 </html>

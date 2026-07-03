@@ -10,7 +10,7 @@ from football_predictor.explain import local_factor_summary
 from football_predictor.features import FEATURE_COLUMNS, FeatureConfig, build_walk_forward_features
 from football_predictor.metrics import calibration_bins, classification_metrics, model_comparison
 from football_predictor.models import OutcomeModel, train_outcome_model
-from football_predictor.simulation import poisson_score_matrix, top_scoreline
+from football_predictor.simulation import dixon_coles_score_matrix, score_market_probabilities, top_scoreline
 
 
 @dataclass(frozen=True)
@@ -52,7 +52,7 @@ def walk_forward_backtest(matches: pd.DataFrame, config: BacktestConfig | None =
         else:
             model_probability = model.predict_proba(row)[0]
 
-        score_matrix = poisson_score_matrix(
+        score_matrix = dixon_coles_score_matrix(
             row["poisson_home_xg"].iloc[0],
             row["poisson_away_xg"].iloc[0],
             max_goals=7,
@@ -62,6 +62,7 @@ def walk_forward_backtest(matches: pd.DataFrame, config: BacktestConfig | None =
         away_win = float(np.triu(score_matrix, k=1).sum())
         probabilities = _blend_probabilities(model_probability, (home_win, draw, away_win))
         home_goals_top, away_goals_top, top_probability = top_scoreline(score_matrix)
+        market_probabilities = score_market_probabilities(score_matrix)
 
         original = featured.iloc[idx].to_dict()
         predictions.append(
@@ -74,6 +75,10 @@ def walk_forward_backtest(matches: pd.DataFrame, config: BacktestConfig | None =
                 "top_score": f"{home_goals_top}-{away_goals_top}",
                 "top_score_probability": top_probability,
                 "score_matrix": score_matrix.tolist(),
+                "expected_home_goals": float(row["poisson_home_xg"].iloc[0]),
+                "expected_away_goals": float(row["poisson_away_xg"].iloc[0]),
+                "expected_total_goals": float(row["poisson_home_xg"].iloc[0] + row["poisson_away_xg"].iloc[0]),
+                **market_probabilities,
             }
         )
 

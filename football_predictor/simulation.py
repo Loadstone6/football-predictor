@@ -15,6 +15,22 @@ def poisson_score_matrix(home_xg: float, away_xg: float, max_goals: int = 7) -> 
     return matrix
 
 
+def dixon_coles_score_matrix(home_xg: float, away_xg: float, max_goals: int = 7, rho: float = -0.08) -> np.ndarray:
+    matrix = poisson_score_matrix(home_xg, away_xg, max_goals=max_goals)
+    home_xg = float(np.clip(home_xg, 0.05, 6.0))
+    away_xg = float(np.clip(away_xg, 0.05, 6.0))
+    adjustments = {
+        (0, 0): 1.0 - home_xg * away_xg * rho,
+        (0, 1): 1.0 + home_xg * rho,
+        (1, 0): 1.0 + away_xg * rho,
+        (1, 1): 1.0 - rho,
+    }
+    for (home_goals, away_goals), factor in adjustments.items():
+        if home_goals <= max_goals and away_goals <= max_goals:
+            matrix[home_goals, away_goals] *= max(0.05, factor)
+    return matrix / matrix.sum()
+
+
 def score_outcome_probabilities(score_matrix: np.ndarray) -> tuple[float, float, float]:
     home_win = float(np.tril(score_matrix, k=-1).sum())
     draw = float(np.trace(score_matrix))
@@ -26,6 +42,22 @@ def score_outcome_probabilities(score_matrix: np.ndarray) -> tuple[float, float,
 def top_scoreline(score_matrix: np.ndarray) -> tuple[int, int, float]:
     idx = np.unravel_index(np.argmax(score_matrix), score_matrix.shape)
     return int(idx[0]), int(idx[1]), float(score_matrix[idx])
+
+
+def score_market_probabilities(score_matrix: np.ndarray) -> dict:
+    max_goal = score_matrix.shape[0] - 1
+    total_goals = np.fromfunction(lambda home, away: home + away, score_matrix.shape)
+    home_goals = np.arange(max_goal + 1).reshape(-1, 1)
+    away_goals = np.arange(max_goal + 1).reshape(1, -1)
+    return {
+        "over_0_5": float(score_matrix[total_goals > 0.5].sum()),
+        "over_1_5": float(score_matrix[total_goals > 1.5].sum()),
+        "over_2_5": float(score_matrix[total_goals > 2.5].sum()),
+        "over_3_5": float(score_matrix[total_goals > 3.5].sum()),
+        "btts": float(score_matrix[(home_goals > 0) & (away_goals > 0)].sum()),
+        "home_clean_sheet": float(score_matrix[:, 0].sum()),
+        "away_clean_sheet": float(score_matrix[0, :].sum()),
+    }
 
 
 def simulate_match_physics(
