@@ -1,0 +1,64 @@
+date,competition,season,home_team,away_team,home_goals,away_goals,neutral_site,home_odds,draw_odds,away_odds,home_xg,away_xg
+2021-06-13,International Sample,2021,England,Croatia,1,0,true,2.05,3.20,4.00,1.10,0.50
+2021-06-14,International Sample,2021,Spain,Sweden,0,0,true,1.42,4.40,8.50,1.75,0.25
+2021-06-15,International Sample,2021,France,Germany,1,0,true,2.70,3.15,2.75,1.35,1.05
+2021-06-16,International Sample,2021,Portugal,Netherlands,2,1,true,2.55,3.30,2.85,1.60,1.15
+2021-07-02,International Sample,2021,Brazil,Chile,1,0,true,1.40,4.30,8.75,1.90,0.70
+2021-07-03,International Sample,2021,Argentina,Ecuador,3,0,true,1.55,3.90,6.75,2.10,0.60
+2021-09-05,International Sample,2021,England,Poland,2,1,false,1.48,4.20,7.20,1.85,0.80
+2021-09-06,International Sample,2021,Spain,Georgia,4,0,false,1.12,8.00,20.00,2.80,0.35
+2021-09-07,International Sample,2021,France,Finland,2,0,false,1.22,6.00,14.00,2.15,0.55
+2021-10-10,International Sample,2021,Germany,Romania,2,1,false,1.18,7.00,15.00,2.40,0.70
+2021-10-11,International Sample,2021,Netherlands,Turkey,3,1,false,1.55,4.10,6.20,2.25,0.95
+2021-11-12,International Sample,2021,Portugal,Serbia,1,2,false,1.45,4.40,7.50,1.60,1.35
+2022-03-24,International Sample,2022,Italy,North Macedonia,0,1,false,1.25,5.75,13.00,2.25,0.35
+2022-03-25,International Sample,2022,Argentina,Venezuela,3,0,false,1.18,6.60,17.00,2.35,0.45
+2022-03-26,International Sample,2022,England,Switzerland,2,1,false,1.75,3.50,5.00,1.55,1.05
+2022-06-05,International Sample,2022,Spain,Portugal,1,1,false,2.10,3.25,3.65,1.25,1.20
+2022-06-06,International Sample,2022,Germany,England,1,1,false,2.25,3.30,3.20,1.35,1.10
+2022-06-07,International Sample,2022,France,Croatia,0,1,false,1.62,3.90,5.75,1.45,0.95
+2022-09-23,International Sample,2022,Italy,England,1,0,false,2.65,3.10,2.85,1.15,0.85
+2022-09-24,International Sample,2022,Netherlands,Poland,2,0,false,1.48,4.25,7.00,2.00,0.75
+2022-11-21,World Cup Sample,2022,England,Iran,6,2,true,1.30,5.40,11.00,2.65,0.85
+2022-11-22,World Cup Sample,2022,Argentina,Saudi Arabia,1,2,true,1.18,7.00,17.00,2.10,0.65
+2022-11-23,World Cup Sample,2022,Spain,Costa Rica,7,0,true,1.25,6.00,13.50,3.10,0.20
+2022-11-23,World Cup Sample,2022,Germany,Japan,1,2,true,1.42,4.70,8.00,2.05,1.30
+2022-11-24,World Cup Sample,2022,Brazil,Serbia,2,0,true,1.45,4.40,7.50,2.00,0.65
+2022-11-26,World Cup Sample,2022,France,Denmark,2,1,true,1.90,3.45,4.30,1.75,1.05
+2022-11-27,World Cup Sample,2022,Spain,Germany,1,1,true,2.60,3.40,2.70,1.20,1.45
+2022-11-28,World Cup Sample,2022,Portugal,Uruguay,2,0,true,2.20,3.25,3.40,1.50,0.80
+2022-12-03,World Cup Sample,2022,Netherlands,United States,3,1,true,1.95,3.35,4.10,1.65,0.90
+2022-12-04,World Cup Sample,2022,France,Poland,3,1,true,1.34,5.10,9.25,2.25,0.75
+2022-12-09,World Cup Sample,2022,Croatia,Brazil,1,1,true,8.20,4.50,1.42,0.95,1.85
+2022-12-10,World Cup Sample,2022,England,France,1,2,true,2.90,3.20,2.55,1.35,1.55
+2022-12-13,World Cup Sample,2022,Argentina,Croatia,3,0,true,1.78,3.35,5.10,2.05,0.65
+2022-12-14,World Cup Sample,2022,France,Morocco,2,0,true,1.58,3.70,6.75,1.70,0.65
+2022-12-18,World Cup Sample,2022,Argentina,France,3,3,true,2.75,3.20,2.70,2.10,2.00
+2023-03-23,International Sample,2023,Italy,England,1,2,false,2.80,3.10,2.70,1.10,1.45
+2023-03-24,International Sample,2023,France,Netherlands,4,0,false,1.80,3.65,4.60,2.30,0.55
+2023-06-15,International Sample,2023,Spain,Italy,2,1,true,2.05,3.15,3.90,1.60,1.10
+2023-06-18,International Sample,2023,Croatia,Spain,0,0,true,3.40,3.20,2.20,0.95,1.25
+2023-09-09,International Sample,2023,England,Ukraine,1,1,true,1.55,4.05,6.40,1.55,0.85
+2023-10-13,International Sample,2023,Netherlands,France,1,2,false,3.05,3.35,2.35,1.30,1.55
+2023-11-18,International Sample,2023,Germany,Turkey,2,3,false,1.52,4.60,5.80,1.85,1.45
+2024-03-23,International Sample,2024,England,Brazil,0,1,false,2.15,3.30,3.45,1.15,1.25
+2024-03-26,International Sample,2024,Spain,Brazil,3,3,false,2.20,3.35,3.30,1.85,1.65
+2024-06-14,International Sample,2024,Germany,Scotland,5,1,false,1.32,5.20,9.50,2.55,0.60
+2024-06-15,International Sample,2024,Spain,Croatia,3,0,true,1.82,3.60,4.60,1.90,0.80
+2024-06-16,International Sample,2024,England,Serbia,1,0,true,1.50,4.30,6.80,1.35,0.65
+2024-06-17,International Sample,2024,France,Austria,1,0,true,1.48,4.40,7.00,1.50,0.75
+2024-07-05,International Sample,2024,Spain,Germany,2,1,true,2.60,3.25,2.75,1.45,1.30
+2024-07-06,International Sample,2024,England,Switzerland,1,1,true,2.05,3.20,3.95,1.20,1.05
+2024-07-09,International Sample,2024,Spain,France,2,1,true,2.70,3.00,2.85,1.35,1.10
+2024-07-10,International Sample,2024,Netherlands,England,1,2,true,3.10,3.25,2.35,1.10,1.35
+2024-07-14,International Sample,2024,Spain,England,2,1,true,2.40,3.10,3.10,1.45,1.15
+2025-03-21,International Sample,2025,Argentina,Brazil,1,0,false,2.20,3.10,3.50,1.25,1.00
+2025-03-22,International Sample,2025,France,Germany,2,2,false,1.95,3.55,3.90,1.65,1.45
+2025-06-08,International Sample,2025,Portugal,Spain,1,2,true,3.05,3.25,2.35,1.10,1.45
+2025-09-06,International Sample,2025,England,Andorra,4,0,false,1.03,15.00,40.00,3.15,0.20
+2025-10-11,International Sample,2025,Brazil,Chile,3,1,false,1.28,5.40,11.00,2.20,0.75
+2025-11-15,International Sample,2025,Germany,France,1,2,false,2.70,3.30,2.60,1.25,1.45
+2026-03-27,International Sample,2026,England,Spain,2,2,false,2.55,3.25,2.80,1.40,1.45
+2026-03-28,International Sample,2026,Argentina,Portugal,2,1,true,2.15,3.30,3.45,1.55,1.25
+2026-06-05,International Sample,2026,United States,Germany,1,2,false,3.60,3.50,2.05,1.10,1.65
+2026-06-08,International Sample,2026,Mexico,Netherlands,0,1,false,3.20,3.30,2.25,0.95,1.35
