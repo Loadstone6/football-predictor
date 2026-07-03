@@ -22,20 +22,11 @@ Open `http://localhost:8000`.
 
 ## Public Deployment
 
-The app is ready for GitHub Pages. The workflow in `.github/workflows/deploy-pages.yml` runs tests, regenerates `web/data/report.json`, and publishes the static `web/` directory.
+The public dashboard is published at:
 
-After the repository is pushed to GitHub:
+<https://loadstone6.github.io/>
 
-1. Open the repository on GitHub.
-2. Go to `Settings` -> `Pages`.
-3. Set `Source` to `GitHub Actions`.
-4. Push to `main` or `master`, or run `Deploy GitHub Pages` manually from the `Actions` tab.
-
-For a repository named `football-predictor` under the `Loadstone6` account, the public URL should be:
-
-```text
-https://loadstone6.github.io/football-predictor/
-```
+The source project is in `Loadstone6/football-predictor`. The live static site is served from the root GitHub Pages repository `Loadstone6/Loadstone6.github.io`, using the generated contents of the local `web/` directory.
 
 ## Use Your Own Data
 
