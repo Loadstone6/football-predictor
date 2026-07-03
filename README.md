@@ -75,3 +75,14 @@ The betting module implements value betting, not true arbitrage. It compares mod
 ```powershell
 python -m pytest
 ```
+
+## Model Comparison
+
+Run walk-forward comparisons across Elo, Poisson, market no-vig, logistic regression, tree ensembles, and XGBoost when installed:
+
+```powershell
+python -m pip install xgboost
+python scripts\compare_models.py --matches data\football_data_matches.csv --output-dir results --min-train 500 --refit-frequency 500
+```
+
+Latest comparison summary: [results/model_comparison.md](results/model_comparison.md).
